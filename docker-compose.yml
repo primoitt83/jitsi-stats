@@ -1,0 +1,34 @@
+version: '3'
+services:
+  influxdb:
+    image: influxdb/influxdb:latest
+    restart: ${RESTART_POLICY}
+    volumes:
+        - ${CONFIG}/influxdb/etc:/etc/grafana:Z
+        - ${CONFIG}/influxdb/var:/var/lib/grafana:Z
+        - ${CONFIG}/influxdb/share:/usr/share/grafana:Z
+    ports:
+      - '${INFLUXDB_PORTA}:8086'
+    networks:
+      - stats.jitsi
+  grafana:
+    image: grafana/grafana:latest
+    restart: ${RESTART_POLICY}
+    volumes:
+        - ${CONFIG}/jibri:/config:Z
+        - ${CONFIG}/grafana/etc:/etc/grafana:Z
+        - ${CONFIG}/grafana/var:/var/lib/grafana:Z
+        - ${CONFIG}/grafana/share:/usr/share/grafana:Z
+    ports:
+      - '${GRAFANA_PORTA}:3000'
+    networks:
+      - stats.jitsi
+  telegraf:
+    image: telegraf
+    restart: ${RESTART_POLICY}
+    volumes:
+      - ${CONFIG}/telegraf:/etc/telegraf:ro
+    networks:
+      - stats.jitsi
+networks:
+  stats.jitsi:
